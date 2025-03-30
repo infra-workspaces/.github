@@ -1,0 +1,7 @@
+{
+    "name": "Terraform Plan workflow for AWS",
+    "description": "Template for executing terraform plan for AWS based infra",
+    "categories": [
+        "Terraform"
+    ]
+}
