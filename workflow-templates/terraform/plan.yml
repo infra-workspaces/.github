@@ -1,0 +1,53 @@
+name: Terraform Plan
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    defaults:
+      # Set working directory to where the terraform configuration is located.
+      run:
+        working-directory: terraform-configs/providers/aws/ec2-dummy
+        
+    steps:
+      - name: Checkout Terraform Configs
+        uses: actions/checkout@v3
+        with:
+          repository: infra-workspaces/terraform-configurations
+          path: terraform-configs
+
+      - name: Checkout Terraform Variables
+        uses: actions/checkout@v3
+        with:
+          repository: infra-workspaces/terraform-variables
+          path: terraform-variables
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Copy Auto TFVars File
+        run: cp ../../../../terraform-variables/ec2-dummy.auto.tfvars .
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: '1.4.0'  # update as required
+
+      - name: Terraform Init
+        run: terraform init -input=false
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan -input=false
