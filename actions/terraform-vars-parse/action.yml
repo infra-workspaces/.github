@@ -10,6 +10,8 @@ inputs:
 outputs:
   parsed-json:
     description: "JSON string of parsed key-value pairs"
+  status:
+    description: "Status of the parsing"
 runs:
   using: "composite"
   steps:
@@ -44,4 +46,5 @@ runs:
         json="${json%,}}"  # Remove trailing comma and close JSON object
       
         # Set the composite action output
-        echo "parsed-json=$json" >> "$GITHUB_OUTPUT"
+        echo "parsed-json=$json" >> $GITHUB_OUTPUT
+        echo "status=done" >> $GITHUB_OUTPUT
