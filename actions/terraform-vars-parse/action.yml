@@ -10,6 +10,13 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - - name: Checkout Terraform Variables
+        uses: actions/checkout@v3
+        with:
+          repository: infra-workspaces/terraform-variables
+          token: ${{ secrets.GH_PAT }}
+          path: terraform-vars
+          
     - name: Parse .auto.vars file
       id: parse
       shell: bash
@@ -24,7 +31,7 @@ runs:
           if [ -n "$key" ]; then
             kv_pairs["$key"]="$value"
           fi
-        done < "$file"
+        done < "./terraform-vars/$file"
 
         # Build JSON string from associative array
         json="{"
