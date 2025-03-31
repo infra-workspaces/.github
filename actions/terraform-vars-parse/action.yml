@@ -24,7 +24,9 @@ runs:
       id: parse
       shell: bash
       run: |
-        file="${{ inputs.file }}"
+        file="./terraform-vars/${{ inputs.file }}"
+        echo "$file"
+        ls .
         declare -A kv_pairs
 
         # Read and parse the file line by line
@@ -34,7 +36,7 @@ runs:
           if [ -n "$key" ]; then
             kv_pairs["$key"]="$value"
           fi
-        done < "./terraform-vars/$file"
+        done < "$file"
 
         # Build JSON string from associative array
         json="{"
