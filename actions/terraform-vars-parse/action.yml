@@ -45,4 +45,4 @@ runs:
         json="${json%,}}"  # Remove trailing comma and close JSON object
       
         # Set the composite action output
-        echo "parsed-json=$kv_pairs" >> $GITHUB_OUTPUT
+        echo "parsed-json=$json" >> $GITHUB_OUTPUT
