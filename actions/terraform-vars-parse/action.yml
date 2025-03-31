@@ -1,6 +1,9 @@
 name: "Parse Auto Vars"
 description: "Parses a .auto.vars file and outputs parsed JSON."
 inputs:
+  pat-token:
+    description: "Personal Access Token to checkout the terraform variables repository"
+    required: true
   file:
     description: "Path to the .auto.vars file"
     required: true
@@ -14,7 +17,7 @@ runs:
       uses: actions/checkout@v3
       with:
         repository: infra-workspaces/terraform-variables
-        token: ${{ secrets.GH_PAT }}
+        token: ${{ inputs.pat-token }}
         path: terraform-vars
           
     - name: Parse .auto.vars file
