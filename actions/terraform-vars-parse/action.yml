@@ -44,6 +44,6 @@ runs:
           json+="\"$key\":\"${kv_pairs[$key]}\","
         done
         json="${json%,}}"  # Remove trailing comma and close JSON object
-        echo "$json"
+      
         # Set the composite action output
-        echo "parsed-json=$json" >> "$GITHUB_OUTPUT"
+        echo "parsed-json=$file" >> "$GITHUB_OUTPUT"
