@@ -10,8 +10,7 @@ inputs:
 outputs:
   parsed-json:
     description: "JSON string of parsed key-value pairs"
-  status:
-    description: "Status of the parsing"
+    value: ${{ steps.parse.outputs.parsed-json }}
 runs:
   using: "composite"
   steps:
@@ -47,4 +46,3 @@ runs:
       
         # Set the composite action output
         echo "parsed-json=$json" >> $GITHUB_OUTPUT
-        echo "status=done" >> $GITHUB_OUTPUT
