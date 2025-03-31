@@ -1,0 +1,49 @@
+name: "Parse Auto Vars Utility"
+
+on:
+  workflow_call:
+    inputs:
+      file:
+        description: "Path to the .auto.vars file"
+        required: true
+        type: string
+
+jobs:
+  parse-vars:
+    runs-on: ubuntu-latest
+    outputs:
+      parsed-json: ${{ steps.parse.outputs.parsed-json }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Parse auto.vars File
+        id: parse
+        run: |
+          file="${{ inputs.file }}"
+          declare -A kv_pairs
+          while IFS='=' read -r key value; do
+            # Trim leading/trailing whitespace
+            key=$(echo "$key" | xargs)
+            value=$(echo "$value" | xargs)
+            # Skip lines without a key
+            if [ -n "$key" ]; then
+              kv_pairs["$key"]="$value"
+            fi
+          done < "$file"
+          
+          # Build a JSON string from the associative array
+          json="{"
+          for key in "${!kv_pairs[@]}"; do
+            json+="\"$key\":\"${kv_pairs[$key]}\","
+          done
+          json="${json%,}}"  # Remove trailing comma and close JSON object
+
+          # Set output for the reusable workflow
+          echo "parsed-json=$json" >> "$GITHUB_OUTPUT"
+          
+          echo "Parsed JSON: $json"
+        shell: bash
+
+      - name: Display Parsed Variables
+        run: echo "Parsed variables: ${{ steps.parse.outputs.parsed-json }}"
