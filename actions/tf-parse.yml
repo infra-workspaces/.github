@@ -1,0 +1,37 @@
+name: "Parse Auto Vars"
+description: "Parses a .auto.vars file and outputs parsed JSON."
+inputs:
+  file:
+    description: "Path to the .auto.vars file"
+    required: true
+outputs:
+  parsed-json:
+    description: "JSON string of parsed key-value pairs"
+runs:
+  using: "composite"
+  steps:
+    - name: Parse .auto.vars file
+      id: parse
+      shell: bash
+      run: |
+        file="${{ inputs.file }}"
+        declare -A kv_pairs
+
+        # Read and parse the file line by line
+        while IFS='=' read -r key value; do
+          key=$(echo "$key" | xargs)
+          value=$(echo "$value" | xargs)
+          if [ -n "$key" ]; then
+            kv_pairs["$key"]="$value"
+          fi
+        done < "$file"
+
+        # Build JSON string from associative array
+        json="{"
+        for key in "${!kv_pairs[@]}"; do
+          json+="\"$key\":\"${kv_pairs[$key]}\","
+        done
+        json="${json%,}}"  # Remove trailing comma and close JSON object
+
+        # Set the composite action output
+        echo "parsed-json=$json" >> "$GITHUB_OUTPUT"
